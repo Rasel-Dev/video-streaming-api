@@ -1,0 +1,333 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "VidApi",
+    "dateExported": "2023-08-29T16:23:16.321Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "804c8e8a-900a-4e73-957b-ff3538304b13",
+            "name": "User",
+            "containerId": "",
+            "created": "2023-08-14T13:06:38.066Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "51358d15-7b83-49ac-93fc-8ab01cdb2a65",
+            "name": "Auth",
+            "containerId": "",
+            "created": "2023-08-14T13:45:38.182Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
+            "name": "Channel",
+            "containerId": "",
+            "created": "2023-08-14T13:50:08.108Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "78298136-4105-4355-8486-734140ed000e",
+            "name": "Video",
+            "containerId": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
+            "created": "2023-08-15T16:49:03.408Z",
+            "sortNum": 40000
+        },
+        {
+            "_id": "4082205f-6653-4a70-bd4b-6a22d6689de6",
+            "name": "Dashboard",
+            "containerId": "",
+            "created": "2023-08-15T17:54:35.102Z",
+            "sortNum": 50000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "24e7eeb5-7ffb-4b71-bd2d-e5e2a6a1b24f",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "51358d15-7b83-49ac-93fc-8ab01cdb2a65",
+            "name": "Create User",
+            "url": "/auth/signup",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-08-14T13:06:38.068Z",
+            "modified": "2023-08-17T16:30:35.436Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"fullname\":\"Rasel CLI\",\n  \"username\":\"raselcli\",\n  \"email\":\"raselcli@gmail.com\",\n  \"password\":\"password\"\n}",
+                "form": []
+            },
+            "tests": [
+                {
+                    "type": "set-env-var",
+                    "custom": "cookie._token",
+                    "action": "setto",
+                    "value": "{{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "7d58fb65-76d5-4df3-8699-188b42a36e07",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "78298136-4105-4355-8486-734140ed000e",
+            "name": "Upload",
+            "url": "/videos/upload",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-08-15T16:49:10.026Z",
+            "modified": "2023-08-19T20:06:43.197Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "multipart/form-data",
+                    "isDisabled": true
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "title",
+                        "value": "This is video title"
+                    },
+                    {
+                        "name": "description",
+                        "value": "this is all about this video"
+                    },
+                    {
+                        "name": "tags",
+                        "value": "funny, tutorial, "
+                    }
+                ],
+                "files": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "7aebda87-c422-4933-8e9c-d2e974468c14",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "804c8e8a-900a-4e73-957b-ff3538304b13",
+            "name": "Profile",
+            "url": "/users",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-08-15T17:54:56.255Z",
+            "modified": "2023-08-15T17:54:56.255Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "a24f9995-1351-43d2-ac74-3e9f36af4726",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "51358d15-7b83-49ac-93fc-8ab01cdb2a65",
+            "name": "Login",
+            "url": "/auth/signin",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-08-14T13:06:38.066Z",
+            "modified": "2023-08-18T09:26:59.788Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\":\"raseldev\",\n  \"password\":\"password\"\n}",
+                "form": []
+            },
+            "tests": [
+                {
+                    "type": "set-env-var",
+                    "custom": "cookie._token",
+                    "action": "setto",
+                    "value": "{{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "f756b163-ddab-4541-9302-43a9ca357eb6",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "4082205f-6653-4a70-bd4b-6a22d6689de6",
+            "name": "Home",
+            "url": "/videos",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2023-08-14T13:06:38.069Z",
+            "modified": "2023-08-15T17:55:38.768Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "7a4815c7-1712-4b0c-8fd3-b98abe3395ea",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "78298136-4105-4355-8486-734140ed000e",
+            "name": "MetaData",
+            "url": "/videos/855fe2be-a4ab-4376-a87d-e252448eb1ca/metadata",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2023-08-17T16:04:04.779Z",
+            "modified": "2023-08-17T16:27:37.231Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "cdc71a7e-57ba-4dce-8ad8-c687b62bfb9a",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
+            "name": "Create",
+            "url": "/channels/new",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2023-08-14T13:50:28.257Z",
+            "modified": "2023-08-14T19:00:39.264Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"channel_name\":\"Dev VidApi\",\n  \"channel_about\":\"this is all about my developed vid Api\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "67c0c57f-f15d-4171-a9f6-2329e0dacc77",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
+            "name": "Auto Create",
+            "url": "/channels/auto-new",
+            "method": "POST",
+            "sortNum": 52500,
+            "created": "2023-08-17T15:44:48.446Z",
+            "modified": "2023-08-17T15:50:45.342Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"channel_name\":\"Dev VidApi\",\n  \"channel_about\":\"this is all about my developed vid Api\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "360b5155-4c91-4e8f-b359-bd39f5de0aeb",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
+            "name": "Dashboard",
+            "url": "/channels/dashboard",
+            "method": "GET",
+            "sortNum": 53750,
+            "created": "2023-08-14T19:00:49.861Z",
+            "modified": "2023-08-14T19:53:06.689Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"channel_name\": \"Dev VidApi\",\n  \"channel_about\": \"this is all about my developed vid Api\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "9313f906-715c-42c0-b1e5-2230cfdb5c2d",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
+            "name": "Follow/UnFollow",
+            "url": "/channels/follow",
+            "method": "POST",
+            "sortNum": 55000,
+            "created": "2023-08-17T15:41:17.927Z",
+            "modified": "2023-08-17T15:43:52.304Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"channel_id\":\"7202e5c4-42fb-4ecc-892d-f1d3a2a0b72c\"\n}",
+                "form": []
+            },
+            "tests": []
+        }
+    ],
+    "settings": {
+        "options": {
+            "baseUrl": "{{base_uri}}"
+        },
+        "envId": "dd03ce2b-c834-4f03-908e-d07e5199ac5e"
+    }
+}

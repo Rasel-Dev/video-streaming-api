@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VidApi</title>
+  </head>
+  <body>
+    <video id="videoPlayer" width="720" controls muted="muted">
+      <source src="/v1/videos/2378" type="video/mp4" />
+    </video>
+    <br />
+    <br /><br /><br /><br />
+
+    <!-- <form action="/v1/videos/" method="post" enctype="multipart/form-data"> -->
+    <input type="file" name="content" id="content" accept="video/mp4,video/x-m4v,video/*" />
+    <button type="submit" onclick="upload()">Upload</button>
+    <!-- </form> -->
+    <script>
+      const video = document.getElementById('videoPlayer')
+      let watchedDurations = []
+
+      video.addEventListener('timeupdate', () => {
+        watchedDurations.push(video.currentTime)
+        console.log(video.currentTime)
+      })
+
+      video.addEventListener('ended', () => {
+        console.log(watchedDurations)
+        // Here you can send the watchedDurations array to your Node.js backend
+      })
+
+      function upload() {
+        var req = new XMLHttpRequest()
+        req.upload.addEventListener('progress', (e) => {
+          console.log((e.loaded / e.total) * 100 + '%')
+        })
+        req.open('POST', '/v1/videos')
+        var form = new FormData()
+        const file = document.getElementById('content').files?.[0]
+        form.append('content', file)
+        form.append('title', 'this is content title')
+        form.append('description', 'All about this content')
+        form.append('tags', 'funny, entertainment, content')
+
+        req.send(form)
+      }
+    </script>
+  </body>
+</html>

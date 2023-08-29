@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  userId         String   @id @default(uuid())
+  fullname       String   @db.VarChar(100)
+  username       String   @unique @db.VarChar(100)
+  email          String   @unique
+  hashedPassword String
+  avater         String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  channel channel?
+  follow  follow[]
+
+  @@index([username])
+}
+
+model channel {
+  channelId String   @id @default(uuid())
+  user      user     @relation(fields: [userId], references: [userId])
+  userId    String   @unique
+  name      String   @db.VarChar(100)
+  about     String
+  createdAt DateTime @default(now())
+
+  follow    follow[]
+  playlist  playlist[]
+  video     video[]
+  statistic statistic[]
+}
+
+model follow {
+  followId   String   @id @default(uuid())
+  user       user     @relation(fields: [userId], references: [userId])
+  userId     String
+  channel    channel  @relation(fields: [channelId], references: [channelId])
+  channelId  String   @unique
+  followedAt DateTime @default(now())
+}
+
+model playlist {
+  playlistId String   @id @default(uuid())
+  channel    channel  @relation(fields: [channelId], references: [channelId])
+  channelId  String
+  createdAt  DateTime @default(now())
+
+  video video[]
+}
+
+model video {
+  videoId     String      @id @default(uuid())
+  channel     channel     @relation(fields: [channelId], references: [channelId])
+  channelId   String
+  playlist    playlist?   @relation(fields: [playlistId], references: [playlistId])
+  playlistId  String?
+  title       String      @db.VarChar(100)
+  description String
+  tags        String
+  source      String      @unique
+  thumbnail   String?
+  duration    Int
+  status      videoStatus @default(PRIVATE)
+  createdAt   DateTime    @default(now())
+
+  statistic statistic?
+}
+
+model statistic {
+  statisticId String  @id @default(uuid())
+  channel     channel @relation(fields: [channelId], references: [channelId])
+  channelId   String
+  video       video   @relation(fields: [videoId], references: [videoId])
+  videoId     String  @unique
+  likes       Int     @default(0)
+  views       Int     @default(0)
+}
+
+enum videoStatus {
+  PRIVATE
+  PUBLIC
+}
