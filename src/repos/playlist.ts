@@ -12,12 +12,13 @@ export const savePlaylist = (channelId: string, title: string) =>
     }
   })
 
-export const savePlaylistWithThumbnail = (channelId: string, title: string, defThumb: string) =>
+export const savePlaylistWithThumbnail = (channelId: string, title: string, defThumb: string, defVidId: string) =>
   prismadb.playlist.create({
     data: {
       channelId,
       title,
       defThumb,
+      defVidId,
       totalVideos: 1
     },
     select: {

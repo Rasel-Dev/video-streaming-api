@@ -57,6 +57,7 @@ model playlist {
   title       String         @default("Untitle Playlist")
   totalVideos Int?
   defThumb    String?
+  defVidId    String?
   status      playlistStatus @default(PUBLIC)
   createdAt   DateTime       @default(now())
 

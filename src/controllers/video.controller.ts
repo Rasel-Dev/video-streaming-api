@@ -140,7 +140,7 @@ class VideoController extends BaseController {
       if (filename) patch.thumbnail = filename
 
       if (newPlaylist) {
-        const createdPlaylist = await savePlaylistWithThumbnail(res.locals.channelId, newPlaylist, filename)
+        const createdPlaylist = await savePlaylistWithThumbnail(res.locals.channelId, newPlaylist, filename, videoId)
         patch.playlistId = createdPlaylist.playlistId
       }
 
