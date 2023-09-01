@@ -70,6 +70,7 @@ export const fetchChannelVideos = (channelId: string, hasOwn = false, skip = 0, 
               videoId: true,
               title: true,
               duration: true,
+              thumbnail: true,
               createdAt: true
             },
             orderBy: {
