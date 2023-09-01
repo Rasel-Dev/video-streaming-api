@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import { channelExists } from 'src/repos/channel'
 import { getCurrentUser } from 'src/repos/user'
 import BaseController from './base.controller'
 
@@ -11,8 +12,8 @@ class UserController extends BaseController {
   private profile = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user
-      const profile = await getCurrentUser(userId)
-      res.json({ id: userId, ...profile })
+      const [profile, channel] = await Promise.all([getCurrentUser(userId), channelExists(userId)])
+      res.json({ id: userId, ...profile, channelId: channel.channelId })
     } catch (error) {
       next(error)
     }
