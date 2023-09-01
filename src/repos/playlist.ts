@@ -54,6 +54,7 @@ export const fetchChannelPlaylists = (
         playlistId: true,
         title: true,
         totalVideos: true,
+        defVidId: true,
         defThumb: true
       },
       orderBy: { playlistId: 'desc' },
@@ -71,7 +72,8 @@ export const fetchChannelPlaylists = (
         playlistId: true,
         title: true,
         totalVideos: true,
-        defThumb: true
+        defThumb: true,
+        defVidId: true
       },
       orderBy: { playlistId: 'desc' },
       skip,
@@ -87,7 +89,8 @@ export const fetchChannelPlaylists = (
       playlistId: true,
       title: true,
       totalVideos: true,
-      defThumb: true
+      defThumb: true,
+      defVidId: true
     },
     orderBy: { playlistId: 'desc' },
     skip,
