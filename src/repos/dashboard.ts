@@ -19,7 +19,7 @@ export const channelDashboardVideoList = (userId: string) =>
     where: {
       userId
     },
-    include: {
+    select: {
       video: {
         select: {
           videoId: true,

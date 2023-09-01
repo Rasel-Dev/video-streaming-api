@@ -10,6 +10,7 @@ export const APP_ENV = {
   APP_URI: process.env?.APP_URI || 'vid-api.com',
   APP_TIMEZONE: process.env?.TZ || 'Asia/Dhaka',
   PORT: +process.env?.PORT || 8000,
+  PER_PAGE: +process.env?.PER_PAGE || 10,
   // CACHE
   SETTINGS_CACHE_TIME: 3600,
   MONTH_CACHE: 2592000,

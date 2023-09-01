@@ -36,3 +36,8 @@ export const getMetadata = (videoId: string) =>
       }
     }
   })
+
+export const totalVideosInChannel = (channelId: string, hasOwn = false) =>
+  hasOwn
+    ? prismadb.video.count({ where: { channelId } })
+    : prismadb.video.count({ where: { channelId, status: 'PUBLIC' } })

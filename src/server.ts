@@ -13,7 +13,7 @@ import userController from './controllers/user.controller'
 import videoController from './controllers/video.controller'
 import corsOptions from './libs/cors'
 import logger from './libs/logger'
-import { redisClient } from './libs/redis'
+// import { redisClient } from './libs/redis'
 
 class ExpressServer {
   public express: express.Application
@@ -83,7 +83,7 @@ class ExpressServer {
   }
 
   public start(): void {
-    redisClient.connect()
+    // redisClient.connect()
     this.server.listen(this.express.get('port'), () => {
       console.log(`Server listening on http://localhost:${this.express.get('port')}`)
     })

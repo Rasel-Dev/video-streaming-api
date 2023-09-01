@@ -1,9 +1,21 @@
 import { channel, follow } from '@prisma/client'
 import prismadb from 'src/libs/prismadb'
+import { APP_ENV } from '..'
 
 export const channelExists = (userId: string) =>
   prismadb.channel.findUnique({
     where: {
+      userId
+    },
+    select: {
+      channelId: true
+    }
+  })
+
+export const hasOwnChannel = (userId: string, channelId: string) =>
+  prismadb.channel.findFirst({
+    where: {
+      channelId,
       userId
     },
     select: {
@@ -45,3 +57,51 @@ export const isFollowed = (channelId: string, userId: string) =>
       followId: true
     }
   })
+
+export const fetchChannelVideos = (channelId: string, hasOwn = false, skip = 0, take = APP_ENV.PER_PAGE) =>
+  hasOwn
+    ? prismadb.channel.findUnique({
+        where: {
+          channelId
+        },
+        select: {
+          video: {
+            select: {
+              videoId: true,
+              title: true,
+              duration: true,
+              createdAt: true
+            },
+            orderBy: {
+              createdAt: 'desc'
+            },
+            skip,
+            take
+          }
+        }
+      })
+    : prismadb.channel.findUnique({
+        where: {
+          channelId,
+          video: {
+            some: {
+              status: 'PUBLIC'
+            }
+          }
+        },
+        select: {
+          video: {
+            select: {
+              videoId: true,
+              title: true,
+              duration: true,
+              createdAt: true
+            },
+            orderBy: {
+              createdAt: 'desc'
+            },
+            skip,
+            take
+          }
+        }
+      })

@@ -5,8 +5,9 @@ import fs from 'fs'
 import path from 'path'
 import multer, { thumbnail } from 'src/libs/multer'
 import prismadb from 'src/libs/prismadb'
-import { channelExists, getFollowCount } from 'src/repos/channel'
+import { getFollowCount } from 'src/repos/channel'
 import { getDashboardVideos } from 'src/repos/dashboard'
+import { savePlaylistWithThumbnail, updatePlaylistCount } from 'src/repos/playlist'
 import { getMetadata, getVideoSource, saveVideo } from 'src/repos/video'
 import { FormErr } from 'src/types/custom'
 import BaseController from './base.controller'
@@ -81,24 +82,6 @@ class VideoController extends BaseController {
     }
   }
 
-  private checkChannelExists = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const haveChannel = await channelExists(req?.user)
-
-      if (!haveChannel) {
-        res.status(400).json({
-          message: 'You have no channel!'
-        })
-        return
-      }
-
-      res.locals.channelId = haveChannel?.channelId
-      next()
-    } catch (error) {
-      next(error)
-    }
-  }
-
   private uploadVideoFile = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.file) {
       res.status(400).json({ message: 'Content file is mission!' })
@@ -125,7 +108,7 @@ class VideoController extends BaseController {
 
   private patchUploadedVideoMetaData = async (req: Request, res: Response, next: NextFunction) => {
     const errors: FormErr = {}
-    const { videoId, title, description, tags } = req.body
+    const { videoId, title, description, tags, playlist, newPlaylist } = req.body
 
     if (!req.file) {
       res.status(400).json({ message: 'Thumbnail is mission!' })
@@ -141,6 +124,7 @@ class VideoController extends BaseController {
     if (!errors?.description && description.length < 20)
       errors.description = 'Description should be minimum 20 character!'
     // if (!errors?.tags && tags?.split(',')) errors.tags = 'Tags is required!'
+    if (newPlaylist && newPlaylist.length < 10) errors.newPlaylist = 'Title should be minimum 10 character!'
 
     if (Object.keys(errors).length) {
       res.status(400).json(errors)
@@ -154,6 +138,20 @@ class VideoController extends BaseController {
       patch.description = description
       patch.tags = tags
       if (filename) patch.thumbnail = filename
+
+      if (newPlaylist) {
+        const createdPlaylist = await savePlaylistWithThumbnail(res.locals.channelId, newPlaylist, filename)
+        patch.playlistId = createdPlaylist.playlistId
+      }
+
+      if (playlist) {
+        const updatePlaylist = await updatePlaylistCount(playlist)
+        if (!updatePlaylist) {
+          res.status(400).json({ message: 'Playlisy not available!' })
+          return
+        }
+        patch.playlistId = playlist
+      }
 
       const patched = await prismadb.video.update({
         where: {

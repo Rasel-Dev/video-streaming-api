@@ -51,10 +51,14 @@ model follow {
 }
 
 model playlist {
-  playlistId String   @id @default(uuid())
-  channel    channel  @relation(fields: [channelId], references: [channelId])
-  channelId  String
-  createdAt  DateTime @default(now())
+  playlistId  String         @id @default(uuid())
+  channel     channel        @relation(fields: [channelId], references: [channelId])
+  channelId   String
+  title       String         @default("Untitle Playlist")
+  totalVideos Int?
+  defThumb    String?
+  status      playlistStatus @default(PUBLIC)
+  createdAt   DateTime       @default(now())
 
   video video[]
 }
@@ -90,4 +94,10 @@ model statistic {
 enum videoStatus {
   PRIVATE
   PUBLIC
+}
+
+enum playlistStatus {
+  PUBLIC
+  FOLLOWER
+  PRIVATE
 }

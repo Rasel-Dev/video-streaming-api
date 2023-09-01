@@ -1,7 +1,18 @@
 import { NextFunction, Request, Response } from 'express'
 import prismadb from 'src/libs/prismadb'
-import { channelExists, createChannel, isFollowed, removeFollow, saveFollow } from 'src/repos/channel'
-import { channelDashboardVideoList } from 'src/repos/dashboard'
+import {
+  channelExists,
+  createChannel,
+  fetchChannelVideos,
+  hasOwnChannel,
+  isFollowed,
+  removeFollow,
+  saveFollow
+} from 'src/repos/channel'
+import { fetchChannelPlaylists, fetchPlaylistsMeta, totalPlaylistsInChannel } from 'src/repos/playlist'
+import { totalVideosInChannel } from 'src/repos/video'
+import { ChannelDashboardQuery } from 'src/types/custom'
+import { APP_ENV } from '..'
 import BaseController from './base.controller'
 
 class ChannelController extends BaseController {
@@ -120,10 +131,81 @@ class ChannelController extends BaseController {
     }
   }
 
-  private dashboard = async (req: Request, res: Response, next: NextFunction) => {
+  // private dashboard = async (req: Request, res: Response, next: NextFunction) => {
+  //   try {
+  //     const videoList = await channelDashboardVideoList(req?.user)
+  //     res.json(videoList)
+  //   } catch (error) {
+  //     next(error)
+  //   }
+  // }
+
+  private getChannelDashboard = async (req: Request, res: Response, next: NextFunction) => {
+    const { cid, sc, page } = req.query as unknown as ChannelDashboardQuery
+    if (!cid) {
+      res.status(404).send('Not found!')
+      return
+    }
+
+    const availableSections = ['videos', 'playlists']
+    if (sc && !availableSections.includes(sc)) {
+      res.status(404).send('Not found!')
+      return
+    }
+
+    if (page && !+page) {
+      res.status(404).send('Not found!')
+      return
+    }
+
+    const canculateSkip = (+page === 1 ? 0 : +page * 10) || 0
+
     try {
-      const videoList = await channelDashboardVideoList(req?.user)
-      res.json(videoList)
+      const hasOwn = await hasOwnChannel(req?.user, cid)
+      switch (sc) {
+        case 'videos': {
+          const total = await totalVideosInChannel(cid, !!hasOwn)
+          const pages = Math.ceil(total / APP_ENV.PER_PAGE)
+          const videos = await fetchChannelVideos(cid, !!hasOwn, canculateSkip)
+          res.json({ page: +page || 1, pages, data: videos?.video || [] })
+          return
+        }
+
+        case 'playlists': {
+          const total = await totalPlaylistsInChannel(cid, !!hasOwn)
+          const pages = Math.ceil(total / APP_ENV.PER_PAGE)
+          const playlists = await fetchChannelPlaylists(cid, !!hasOwn, canculateSkip)
+          res.json({ page: +page || 1, pages, data: playlists || [] })
+          return
+        }
+
+        case 'pl': {
+          /**
+           * If the channel is not owner by requested user it will return "Not found!"
+           */
+          if (!hasOwn) {
+            res.status(404).send('Not found!')
+            return
+          }
+          const playlists = await fetchPlaylistsMeta(cid)
+          res.json(playlists || [])
+          return
+        }
+
+        default:
+          res.status(503).json('Temporary unavailable service!')
+          return
+      }
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  private getChannelPlaylistsMeta = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const cid = res.locals.channelId
+      const playlists = await fetchPlaylistsMeta(cid)
+      res.json(playlists || [])
     } catch (error) {
       next(error)
     }
@@ -133,11 +215,12 @@ class ChannelController extends BaseController {
    * configure router
    */
   public routes() {
+    this.router.get('/dashboard', this.freeAuth, this.getChannelDashboard)
     this.router.use(this.auth)
-    this.router.get('/dashboard', this.dashboard)
     this.router.post('/new', this.newChannel)
     this.router.post('/auto-new', this.autoNewChannel)
     this.router.post('/follow', this.follow)
+    this.router.get('/playlists', this.checkChannelExists, this.getChannelPlaylistsMeta)
 
     // -------------------------
 

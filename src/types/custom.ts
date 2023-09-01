@@ -6,3 +6,9 @@ export type JWTType = {
 export type UserAuthReq = string
 
 export type FormErr = Record<string, string | boolean>
+
+export type ChannelDashboardQuery = {
+  cid: string
+  sc: string
+  page?: number
+}
