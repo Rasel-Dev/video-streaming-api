@@ -106,3 +106,19 @@ export const fetchChannelVideos = (channelId: string, hasOwn = false, skip = 0, 
           }
         }
       })
+
+export const fetchChannelProfile = (channelId: string) =>
+  prismadb.channel.findUnique({
+    where: {
+      channelId
+    },
+    select: {
+      user: {
+        select: {
+          fullname: true,
+          username: true,
+          avater: true
+        }
+      }
+    }
+  })

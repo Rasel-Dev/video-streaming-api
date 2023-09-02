@@ -3,7 +3,9 @@ import prismadb from 'src/libs/prismadb'
 import {
   channelExists,
   createChannel,
+  fetchChannelProfile,
   fetchChannelVideos,
+  getFollowCount,
   hasOwnChannel,
   isFollowed,
   removeFollow,
@@ -147,7 +149,7 @@ class ChannelController extends BaseController {
       return
     }
 
-    const availableSections = ['videos', 'playlists']
+    const availableSections = ['profile', 'videos', 'playlists']
     if (sc && !availableSections.includes(sc)) {
       res.status(404).send('Not found!')
       return
@@ -161,8 +163,32 @@ class ChannelController extends BaseController {
     const canculateSkip = (+page === 1 ? 0 : +page * 10) || 0
 
     try {
-      const hasOwn = await hasOwnChannel(req?.user, cid)
+      const hasOwn = req?.user ? await hasOwnChannel(req?.user, cid) : false
       switch (sc) {
+        case 'profile': {
+          // [ x ] fullname: '',
+          // [ x ] username: '',
+          // [ x ] totalFollowers: 0,
+          // [ x ] totalVideos: 0,
+          // [ - ] about: '',
+          // [ x ] avatar: '',
+
+          const [profile, totalVideos, totalFollowers, hasFollowed] = await Promise.all([
+            fetchChannelProfile(cid),
+            totalVideosInChannel(cid, !!hasOwn),
+            getFollowCount(cid),
+            req?.user ? isFollowed(cid, req?.user) : Promise.resolve(false)
+          ])
+          res.json({
+            ...profile.user,
+            totalVideos,
+            totalFollowers,
+            hasFollowed: !!hasFollowed,
+            about: `This is a dummy description about this channel. it's static from VidApi, in the future it'll be dynamic (under development)`
+          })
+          return
+        }
+
         case 'videos': {
           const total = await totalVideosInChannel(cid, !!hasOwn)
           const pages = Math.ceil(total / APP_ENV.PER_PAGE)
