@@ -12,3 +12,8 @@ export type ChannelDashboardQuery = {
   sc: string
   page?: number
 }
+
+export type VideoMetaQuery = {
+  v: string
+  p: string
+}

@@ -11,7 +11,12 @@ import {
   removeFollow,
   saveFollow
 } from 'src/repos/channel'
-import { fetchChannelPlaylists, fetchPlaylistsMeta, totalPlaylistsInChannel } from 'src/repos/playlist'
+import {
+  fetchChannelPlaylists,
+  fetchPlaylistsMeta,
+  totalPlaylistsInChannel,
+  totalVideosInPlaylist
+} from 'src/repos/playlist'
 import { totalVideosInChannel } from 'src/repos/video'
 import { ChannelDashboardQuery } from 'src/types/custom'
 import { APP_ENV } from '..'
@@ -164,6 +169,7 @@ class ChannelController extends BaseController {
 
     try {
       const hasOwn = req?.user ? await hasOwnChannel(req?.user, cid) : false
+
       switch (sc) {
         case 'profile': {
           // [ x ] fullname: '',
@@ -200,7 +206,21 @@ class ChannelController extends BaseController {
         case 'playlists': {
           const total = await totalPlaylistsInChannel(cid, !!hasOwn)
           const pages = Math.ceil(total / APP_ENV.PER_PAGE)
-          const playlists = await fetchChannelPlaylists(cid, !!hasOwn, canculateSkip)
+          const fetchPlaylists = await fetchChannelPlaylists(cid, !!hasOwn, canculateSkip)
+          // console.log('fetchPlaylists :', fetchPlaylists.map((pl) => pl.playlistId).join(', '))
+
+          const playlistVideoCount = await totalVideosInPlaylist(fetchPlaylists.map((pl) => pl.playlistId))
+
+          const playlists = fetchPlaylists.map((pl) => ({
+            playlistId: pl.playlistId,
+            title: pl.title,
+            description: pl.description,
+            videoId: pl.playlist_video[0]?.videoId,
+            thumbnail: pl.playlist_video[0]?.video.thumbnail,
+            totalVideos:
+              playlistVideoCount.filter((item) => item.playlistId === pl.playlistId)?.[0]?.playlist_video.length || 0
+          }))
+
           res.json({ page: +page || 1, pages, data: playlists || [] })
           return
         }

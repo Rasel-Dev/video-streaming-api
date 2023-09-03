@@ -1,0 +1,1 @@
+CREATE OR REPLACE VIEW pl_view AS SELECT pl."channelId", pl."playlistId", (SELECT count(1) FROM playlist_video plv WHERE plv."playlistId" = pl."playlistId")::INT totalVideos FROM playlist pl;

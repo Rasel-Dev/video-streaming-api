@@ -51,25 +51,30 @@ model follow {
 }
 
 model playlist {
-  playlistId  String         @id @default(uuid())
-  channel     channel        @relation(fields: [channelId], references: [channelId])
-  channelId   String
-  title       String         @default("Untitle Playlist")
-  totalVideos Int?
-  defThumb    String?
-  defVidId    String?
-  status      playlistStatus @default(PUBLIC)
-  createdAt   DateTime       @default(now())
+  playlistId     String           @id @default(uuid())
+  channel        channel          @relation(fields: [channelId], references: [channelId])
+  channelId      String
+  title          String           @default("Untitle Playlist")
+  description    String           @default("No Description")
+  status         playlistStatus   @default(PUBLIC)
+  createdAt      DateTime         @default(now())
+  playlist_video playlist_video[]
+}
 
-  video video[]
+model playlist_video {
+  playlistVideoId String         @id @default(uuid())
+  playlist        playlist       @relation(fields: [playlistId], references: [playlistId])
+  playlistId      String
+  video           video          @relation(fields: [videoId], references: [videoId])
+  videoId         String
+  status          playlistStatus @default(PUBLIC)
+  createdAt       DateTime       @default(now())
 }
 
 model video {
   videoId     String      @id @default(uuid())
   channel     channel     @relation(fields: [channelId], references: [channelId])
   channelId   String
-  playlist    playlist?   @relation(fields: [playlistId], references: [playlistId])
-  playlistId  String?
   title       String      @db.VarChar(100)
   description String
   tags        String
@@ -79,7 +84,8 @@ model video {
   status      videoStatus @default(PRIVATE)
   createdAt   DateTime    @default(now())
 
-  statistic statistic?
+  statistic      statistic?
+  playlist_video playlist_video[]
 }
 
 model statistic {

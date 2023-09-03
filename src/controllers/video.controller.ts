@@ -7,9 +7,9 @@ import multer, { thumbnail } from 'src/libs/multer'
 import prismadb from 'src/libs/prismadb'
 import { getFollowCount } from 'src/repos/channel'
 import { getDashboardVideos } from 'src/repos/dashboard'
-import { savePlaylistWithThumbnail, updatePlaylistCount } from 'src/repos/playlist'
+import { addToPlaylist, checkPlaylist, createNewPlaylist, fetchPlaylist } from 'src/repos/playlist'
 import { getMetadata, getVideoSource, saveVideo } from 'src/repos/video'
-import { FormErr } from 'src/types/custom'
+import { FormErr, VideoMetaQuery } from 'src/types/custom'
 import BaseController from './base.controller'
 
 class VideoController extends BaseController {
@@ -71,11 +71,32 @@ class VideoController extends BaseController {
 
   private getVideo__Metadata = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { videoId } = req.params
-      // console.log(videoId)
+      const { v, p } = req.query as unknown as VideoMetaQuery
 
-      const metadata = await getMetadata(videoId)
+      if (!v || (v && v.split('-').length !== 5)) {
+        res.status(503).send('Content missing!')
+        return
+      }
+      if (p && p.split('-').length !== 5) {
+        res.status(503).send('Content missing!')
+        return
+      }
+
+      const metadata = await getMetadata(v)
       const followers = await getFollowCount(metadata.channelId)
+      if (p) {
+        /**
+         * This playlist section have 1 bug and that's playlistId can not check if this current videoId belongs to this playlist or not
+         * it will be just response playlist videos
+         */
+        const playlist = (await fetchPlaylist(p)).map((pl) => ({
+          ...pl,
+          playlist_video: pl.playlist_video.map((v) => v.video)
+        }))?.[0]
+        // const playlist = await fetchPlaylist(p)
+        res.json({ ...metadata, followers, playlist })
+        return
+      }
       res.json({ ...metadata, followers })
     } catch (error) {
       next(error)
@@ -140,17 +161,17 @@ class VideoController extends BaseController {
       if (filename) patch.thumbnail = filename
 
       if (newPlaylist) {
-        const createdPlaylist = await savePlaylistWithThumbnail(res.locals.channelId, newPlaylist, filename, videoId)
-        patch.playlistId = createdPlaylist.playlistId
+        const createdNewPlaylist = await createNewPlaylist(res.locals.channelId, newPlaylist, 'No Description')
+        await addToPlaylist(createdNewPlaylist.playlistId, videoId)
       }
 
       if (playlist) {
-        const updatePlaylist = await updatePlaylistCount(playlist)
-        if (!updatePlaylist) {
+        const checkPll = await checkPlaylist(playlist, res.locals.channelId)
+        if (!checkPll) {
           res.status(400).json({ message: 'Playlisy not available!' })
           return
         }
-        patch.playlistId = playlist
+        await addToPlaylist(playlist, videoId)
       }
 
       const patched = await prismadb.video.update({
@@ -180,16 +201,15 @@ class VideoController extends BaseController {
    */
   public routes() {
     this.router.get('/', this.getDashboard)
-    this.router.get('/:videoId', this.getVideo__Stream)
-    this.router.get('/:videoId/metadata', this.freeAuth, this.getVideo__Metadata)
-    this.router.post('/:videoId/duration', this.freeAuth, this.updateWatchedDuration)
+    this.router.get('/str/:videoId', this.getVideo__Stream)
+    this.router.get('/metadata', this.freeAuth, this.getVideo__Metadata)
+    this.router.post('/duration', this.freeAuth, this.updateWatchedDuration)
 
     this.router.use(this.auth)
     this.router.post('/upload', this.checkChannelExists, multer.single('content'), this.uploadVideoFile)
     this.router.post('/publish', this.checkChannelExists, thumbnail, this.patchUploadedVideoMetaData)
 
     // -------------------------
-
     // this._showRoutes()
   }
 }

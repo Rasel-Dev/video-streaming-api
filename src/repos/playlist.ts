@@ -1,42 +1,90 @@
+import { playlistStatus } from '@prisma/client'
 import prismadb from 'src/libs/prismadb'
 import { APP_ENV } from '..'
 
-export const savePlaylist = (channelId: string, title: string) =>
-  prismadb.playlist.create({
-    data: {
-      channelId,
-      title
-    },
-    select: {
-      playlistId: true
-    }
-  })
-
-export const savePlaylistWithThumbnail = (channelId: string, title: string, defThumb: string, defVidId: string) =>
+export const createNewPlaylist = (channelId: string, title: string, description: string) =>
   prismadb.playlist.create({
     data: {
       channelId,
       title,
-      defThumb,
-      defVidId,
-      totalVideos: 1
+      description
     },
     select: {
       playlistId: true
     }
   })
 
-export const updatePlaylistCount = (playlistId: string) =>
-  prismadb.playlist.update({
-    where: {
-      playlistId
-    },
-    data: { totalVideos: { increment: 1 } },
-    select: { totalVideos: true }
+export const checkPlaylist = (playlistId: string, channelId: string) =>
+  prismadb.playlist.findFirst({
+    where: { playlistId, channelId },
+    select: { playlistId: true }
+  })
+
+export const addToPlaylist = (playlistId: string, videoId: string, status = playlistStatus.PUBLIC) =>
+  prismadb.playlist_video.create({
+    data: {
+      playlistId,
+      videoId,
+      status
+    }
   })
 
 export const totalPlaylistsInChannel = (channelId: string, hasOwn = false) =>
-  hasOwn ? prismadb.playlist.count({ where: { channelId } }) : prismadb.playlist.count({ where: { channelId } })
+  hasOwn
+    ? prismadb.playlist.count({ where: { channelId } })
+    : prismadb.playlist.count({ where: { channelId, status: 'PUBLIC' } })
+
+// export const totalVideosInPlaylist = (playlistIds: string) =>
+//   prismadb.$queryRaw<
+//     PlaylistRow[]
+//   >`SELECT "playlistId", "totalvideos" FROM pl_view WHERE "playlistId" IN (${playlistIds})`
+
+export const totalVideosInPlaylist = (playlistIds: string[]) =>
+  prismadb.playlist.findMany({
+    where: {
+      playlistId: { in: playlistIds }
+    },
+    distinct: ['playlistId'],
+    select: {
+      playlistId: true,
+      playlist_video: {
+        select: {
+          videoId: true
+        }
+      }
+    }
+  })
+
+export const fetchPlaylist = (playlistId: string) =>
+  prismadb.playlist.findMany({
+    where: {
+      playlistId
+    },
+    select: {
+      title: true,
+      description: true,
+      playlist_video: {
+        select: {
+          video: {
+            select: {
+              channelId: true,
+              videoId: true,
+              thumbnail: true,
+              title: true,
+              duration: true,
+              createdAt: true,
+              channel: {
+                select: {
+                  name: true
+                  // user: { select: { avater: true } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })
 
 export const fetchChannelPlaylists = (
   channelId: string,
@@ -53,11 +101,24 @@ export const fetchChannelPlaylists = (
       select: {
         playlistId: true,
         title: true,
-        totalVideos: true,
-        defVidId: true,
-        defThumb: true
+        description: true,
+        playlist_video: {
+          select: {
+            videoId: true,
+            video: {
+              select: {
+                thumbnail: true
+              }
+            }
+          },
+          distinct: ['playlistId'],
+          orderBy: {
+            createdAt: 'asc'
+          },
+          take: 1
+        }
       },
-      orderBy: { playlistId: 'desc' },
+      orderBy: { createdAt: 'desc' },
       skip,
       take
     })
@@ -71,11 +132,24 @@ export const fetchChannelPlaylists = (
       select: {
         playlistId: true,
         title: true,
-        totalVideos: true,
-        defThumb: true,
-        defVidId: true
+        description: true,
+        playlist_video: {
+          select: {
+            videoId: true,
+            video: {
+              select: {
+                thumbnail: true
+              }
+            }
+          },
+          distinct: ['playlistId'],
+          orderBy: {
+            createdAt: 'asc'
+          },
+          take: 1
+        }
       },
-      orderBy: { playlistId: 'desc' },
+      orderBy: { createdAt: 'desc' },
       skip,
       take
     })
@@ -88,11 +162,24 @@ export const fetchChannelPlaylists = (
     select: {
       playlistId: true,
       title: true,
-      totalVideos: true,
-      defThumb: true,
-      defVidId: true
+      description: true,
+      playlist_video: {
+        select: {
+          videoId: true,
+          video: {
+            select: {
+              thumbnail: true
+            }
+          }
+        },
+        distinct: ['playlistId'],
+        orderBy: {
+          createdAt: 'asc'
+        },
+        take: 1
+      }
     },
-    orderBy: { playlistId: 'desc' },
+    orderBy: { createdAt: 'desc' },
     skip,
     take
   })
@@ -107,5 +194,5 @@ export const fetchPlaylistsMeta = (channelId: string) =>
       playlistId: true,
       title: true
     },
-    orderBy: { playlistId: 'desc' }
+    orderBy: { createdAt: 'desc' }
   })
