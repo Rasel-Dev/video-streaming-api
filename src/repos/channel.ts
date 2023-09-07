@@ -27,6 +27,7 @@ export const createChannel = (body: Omit<channel, 'channelId' | 'createdAt'>) =>
   prismadb.channel.create({
     data: body,
     select: {
+      channelId: true,
       name: true
     }
   })
@@ -96,6 +97,7 @@ export const fetchChannelVideos = (channelId: string, hasOwn = false, skip = 0, 
               videoId: true,
               title: true,
               duration: true,
+              thumbnail: true,
               createdAt: true
             },
             orderBy: {
