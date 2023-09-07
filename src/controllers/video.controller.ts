@@ -129,7 +129,7 @@ class VideoController extends BaseController {
 
   private patchUploadedVideoMetaData = async (req: Request, res: Response, next: NextFunction) => {
     const errors: FormErr = {}
-    const { videoId, title, description, tags, playlist, newPlaylist } = req.body
+    const { videoId, title, description, tags, status, playlist, newPlaylist } = req.body
 
     if (!req.file) {
       res.status(400).json({ message: 'Thumbnail is mission!' })
@@ -140,6 +140,7 @@ class VideoController extends BaseController {
     if (!title) errors.title = 'Title is required!'
     if (!description) errors.description = 'Description is required!'
     if (!tags) errors.tags = 'Tags is required!'
+    if (status && !['PUBLIC', 'PRIVATE'].includes(status)) errors.status = 'Status is required!'
 
     if (!errors?.title && title.length < 10) errors.title = 'Title should be minimum 10 character!'
     if (!errors?.description && description.length < 20)
@@ -158,6 +159,7 @@ class VideoController extends BaseController {
       patch.title = title
       patch.description = description
       patch.tags = tags
+      patch.status = status
       if (filename) patch.thumbnail = filename
 
       if (newPlaylist) {

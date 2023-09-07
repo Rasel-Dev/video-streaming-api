@@ -13,6 +13,7 @@ import userController from './controllers/user.controller'
 import videoController from './controllers/video.controller'
 import corsOptions from './libs/cors'
 import logger from './libs/logger'
+import searchController from './controllers/search.controller'
 // import { redisClient } from './libs/redis'
 
 class ExpressServer {
@@ -53,6 +54,7 @@ class ExpressServer {
     this.express.use('/v1/users/', userController.router)
     this.express.use('/v1/channels/', channelController.router)
     this.express.use('/v1/videos/', videoController.router)
+    this.express.use('/v1/search/', searchController.router)
   }
 
   private _errorRoutes(): void {
