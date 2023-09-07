@@ -1,22 +1,22 @@
 {
     "client": "Thunder Client",
     "collectionName": "VidApi",
-    "dateExported": "2023-08-29T16:23:16.321Z",
+    "dateExported": "2023-09-07T23:14:18.334Z",
     "version": "1.1",
     "folders": [
+        {
+            "_id": "51358d15-7b83-49ac-93fc-8ab01cdb2a65",
+            "name": "Auth",
+            "containerId": "",
+            "created": "2023-08-14T13:45:38.182Z",
+            "sortNum": 5000
+        },
         {
             "_id": "804c8e8a-900a-4e73-957b-ff3538304b13",
             "name": "User",
             "containerId": "",
             "created": "2023-08-14T13:06:38.066Z",
             "sortNum": 10000
-        },
-        {
-            "_id": "51358d15-7b83-49ac-93fc-8ab01cdb2a65",
-            "name": "Auth",
-            "containerId": "",
-            "created": "2023-08-14T13:45:38.182Z",
-            "sortNum": 20000
         },
         {
             "_id": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
@@ -33,11 +33,25 @@
             "sortNum": 40000
         },
         {
+            "_id": "77fe07a7-b850-4c16-8a3d-cceaa3b88bf6",
+            "name": "Playlist",
+            "containerId": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
+            "created": "2023-09-01T14:06:22.893Z",
+            "sortNum": 45000
+        },
+        {
             "_id": "4082205f-6653-4a70-bd4b-6a22d6689de6",
-            "name": "Dashboard",
+            "name": "Home Dashboard",
             "containerId": "",
             "created": "2023-08-15T17:54:35.102Z",
             "sortNum": 50000
+        },
+        {
+            "_id": "81d48889-24a2-40b1-93f6-c0a46b7edd19",
+            "name": "Search Items",
+            "containerId": "",
+            "created": "2023-09-07T22:52:28.006Z",
+            "sortNum": 60000
         }
     ],
     "requests": [
@@ -135,6 +149,72 @@
             "tests": []
         },
         {
+            "_id": "c7cb7055-da5d-419b-9c3b-6a725e89d766",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "77fe07a7-b850-4c16-8a3d-cceaa3b88bf6",
+            "name": "Upload",
+            "url": "/videos/upload",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-09-01T14:06:22.893Z",
+            "modified": "2023-09-01T14:06:22.893Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "multipart/form-data",
+                    "isDisabled": true
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "title",
+                        "value": "This is video title"
+                    },
+                    {
+                        "name": "description",
+                        "value": "this is all about this video"
+                    },
+                    {
+                        "name": "tags",
+                        "value": "funny, tutorial, "
+                    }
+                ],
+                "files": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "19ddac92-6832-472a-8363-245c1a29292e",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "77fe07a7-b850-4c16-8a3d-cceaa3b88bf6",
+            "name": "meta",
+            "url": "/channels/playlists",
+            "method": "GET",
+            "sortNum": 15000,
+            "created": "2023-09-01T14:15:32.408Z",
+            "modified": "2023-09-01T14:30:02.407Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
             "_id": "a24f9995-1351-43d2-ac74-3e9f36af4726",
             "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
             "containerId": "51358d15-7b83-49ac-93fc-8ab01cdb2a65",
@@ -193,11 +273,79 @@
             "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
             "containerId": "78298136-4105-4355-8486-734140ed000e",
             "name": "MetaData",
-            "url": "/videos/855fe2be-a4ab-4376-a87d-e252448eb1ca/metadata",
+            "url": "/videos/metadata?v=8e02e27b-e928-4684-8e3f-0defb803d1b3&p=03f08bdb-469d-450c-a3b7-fb199d7e3527",
             "method": "GET",
             "sortNum": 20000,
             "created": "2023-08-17T16:04:04.779Z",
-            "modified": "2023-08-17T16:27:37.231Z",
+            "modified": "2023-09-03T11:27:54.160Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [
+                {
+                    "name": "v",
+                    "value": "8e02e27b-e928-4684-8e3f-0defb803d1b3",
+                    "isPath": false
+                },
+                {
+                    "name": "p",
+                    "value": "03f08bdb-469d-450c-a3b7-fb199d7e3527",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "1f73fd05-6829-4298-903e-d0968dc728cf",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "81d48889-24a2-40b1-93f6-c0a46b7edd19",
+            "name": "Search",
+            "url": "/search?q=create NeXt&page=1",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2023-09-07T22:52:28.007Z",
+            "modified": "2023-09-07T22:59:08.159Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [
+                {
+                    "name": "q",
+                    "value": "create NeXt",
+                    "isPath": false
+                },
+                {
+                    "name": "page",
+                    "value": "1",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "41c6dd0f-9345-42cd-a731-22c7e32c54c8",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "77fe07a7-b850-4c16-8a3d-cceaa3b88bf6",
+            "name": "Playlist Items",
+            "url": "/channels/playlists",
+            "method": "GET",
+            "sortNum": 25000,
+            "created": "2023-09-03T11:03:56.860Z",
+            "modified": "2023-09-03T11:03:56.860Z",
             "headers": [
                 {
                     "name": "Content-Type",
@@ -272,11 +420,45 @@
             "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
             "containerId": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
             "name": "Dashboard",
-            "url": "/channels/dashboard",
+            "url": "/search?q=how to make&page=1",
             "method": "GET",
             "sortNum": 53750,
             "created": "2023-08-14T19:00:49.861Z",
-            "modified": "2023-08-14T19:53:06.689Z",
+            "modified": "2023-09-07T22:53:33.836Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "{{token}}"
+                }
+            ],
+            "params": [
+                {
+                    "name": "q",
+                    "value": "how to make",
+                    "isPath": false
+                },
+                {
+                    "name": "page",
+                    "value": "1",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "88740986-1161-4dda-aa37-a52a59503231",
+            "colId": "dca635d2-faf2-4c1a-8538-197638cf6fb3",
+            "containerId": "2bb303d1-68ea-43c9-a1e6-45cc8a5cd32e",
+            "name": "Videos",
+            "url": "/channels/dashboard",
+            "method": "GET",
+            "sortNum": 54375,
+            "created": "2023-09-01T10:50:47.877Z",
+            "modified": "2023-09-01T10:50:47.877Z",
             "headers": [
                 {
                     "name": "Content-Type",
